@@ -4,11 +4,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class EPayHttpRequest {
-    public enum METHOD {
+
+    public enum Method {
         GET("GET"), POST("POST");
         private String value;
 
-        METHOD(String value) {
+        Method(String value) {
             this.value = value;
         }
 
@@ -17,12 +18,31 @@ public class EPayHttpRequest {
         }
     }
 
+    public enum ContentType {
+        X_WWW_FORM_URLENCODED("application/x-www-form-urlencoded"), FORM_DATA("multipart/form-data");
+        private String value;
+
+        ContentType(String value) {
+            this.value = value;
+        }
+
+        public String getValue() {
+            return value;
+        }
+    }
+
+    // 请求路径
     private String path;
-    private METHOD method;
+    // 请求方式
+    private Method method;
+    // 请求方式
+    private ContentType contentType;
+    // 请求头信息
     private Map<String, String> headers = new HashMap<>();
+    // 请求参数
     private Map<String, String> params = new HashMap<>();
 
-    public EPayHttpRequest(METHOD method, String path) {
+    public EPayHttpRequest(Method method, String path) {
         this.method = method;
         this.path = path;
     }
@@ -35,12 +55,21 @@ public class EPayHttpRequest {
         this.path = path;
     }
 
-    public METHOD getMethod() {
+    public Method getMethod() {
         return method;
     }
 
-    public void setMethod(METHOD method) {
+    public void setMethod(Method method) {
         this.method = method;
+    }
+
+    public ContentType getContentType() {
+        return contentType;
+    }
+
+    public void setContentType(ContentType contentType) {
+        this.contentType = contentType;
+        addRequestHeader("Content-Type", contentType.getValue());
     }
 
     public Map<String, String> getHeaders() {

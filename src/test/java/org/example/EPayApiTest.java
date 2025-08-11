@@ -89,14 +89,14 @@ public class EPayApiTest extends TestCase {
         Assert.assertNotNull(redirectPayLink);
     }
 
-    public void testApiInterfacePayNoExtraParams() throws Exception {
-        PayRequestParam requestParam = getDefaultRequestParam(EPayType.WX_PAY);
+    public void testApiInterfacePayNoModifier() throws Exception {
+        PayRequestParam requestParam = getDefaultRequestParam(EPayType.ALI_PAY);
         ApiPayResponse apiPayResponse = ePayApi.apiInterfacePay(requestParam);
         System.out.println("apiPayResponse: " + gson.toJson(apiPayResponse));
         Assert.assertNotNull(apiPayResponse);
     }
 
-    public void testApiInterfacePaWithExtraParams() throws Exception {
+    public void testApiInterfacePaWithModifier() throws Exception {
         PayRequestParam requestParam = getDefaultRequestParam(EPayType.WX_PAY);
         Map<String, String> extraParams = new HashMap<>();
         extraParams.put("cid", ZPayConfig.ZPayChannel.ALI_PAY.getChannelId());

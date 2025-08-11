@@ -9,16 +9,14 @@ import org.example.request.EPayHttpInterceptor;
 import org.example.request.EPayHttpRequest;
 import org.example.request.EPayHttpResponse;
 import org.example.request.impl.interceptor.EPayPidInterceptor;
-import org.example.request.impl.interceptor.EPayRequestHeaderInterceptor;
 import org.example.request.impl.interceptor.EPaySignatureInterceptor;
 import org.example.util.Md5Utils;
 import org.example.util.ReflectUtils;
 import org.example.util.UrlBuilder;
 
 import java.math.BigDecimal;
-import java.util.Locale;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
+import java.util.function.Consumer;
 
 public class EPayApi implements IEPayApi {
     private String pid;
@@ -26,6 +24,7 @@ public class EPayApi implements IEPayApi {
     private String baseUrl;
     private EPayHttpClient httpClient;
     private Gson gson;
+    private int fixedInterceptorSize;
 
     public EPayApi(String pid, String key, String hostName) {
         this.pid = pid;
@@ -37,15 +36,19 @@ public class EPayApi implements IEPayApi {
 
     private void initHttpClient() {
         httpClient = new EPayHttpClient(this.baseUrl);
-        httpClient.addInterceptor(new EPayRequestHeaderInterceptor());
-        httpClient.addInterceptor(new EPayPidInterceptor(pid));
-        httpClient.addInterceptor(new EPaySignatureInterceptor(key, EPaySignType.MD5));
+        List<EPayHttpInterceptor> interceptorList = new ArrayList<>();
+        interceptorList.add(new EPayPidInterceptor(pid));
+        interceptorList.add(new EPaySignatureInterceptor(key, EPaySignType.MD5));
+        fixedInterceptorSize = interceptorList.size();
+        for (EPayHttpInterceptor interceptor : interceptorList) {
+            httpClient.addInterceptor(interceptor);
+        }
     }
 
     @Override
     public void addInterceptor(EPayHttpInterceptor interceptor) {
         int size = httpClient.getInterceptors().size();
-        httpClient.addInterceptor(size - 3, interceptor);
+        httpClient.addInterceptor(size - fixedInterceptorSize, interceptor);
     }
 
     @Override
@@ -69,19 +72,18 @@ public class EPayApi implements IEPayApi {
         return String.format(Locale.US, "%s/%s?%s", baseUrl, "submit.php", queryStr);
     }
 
-
     @Override
     public ApiPayResponse apiInterfacePay(PayRequestParam payRequestParam) throws Exception {
         return apiInterfacePay(payRequestParam, null);
     }
 
     @Override
-    public ApiPayResponse apiInterfacePay(PayRequestParam payRequestParam, Map<String, String> extraParams) throws Exception {
+    public ApiPayResponse apiInterfacePay(PayRequestParam payRequestParam, Consumer<EPayHttpRequest> requestModifier) throws Exception {
         Map<String, String> fieldMap = ReflectUtils.getObjFields(payRequestParam);
-        EPayHttpRequest request = new EPayHttpRequest(EPayHttpRequest.METHOD.POST, "/mapi.php");
+        EPayHttpRequest request = new EPayHttpRequest(EPayHttpRequest.Method.POST, "/mapi.php");
         request.addRequestParams(fieldMap);
-        if (extraParams != null) {
-            request.addRequestParams(extraParams);
+        if (requestModifier != null) {
+            requestModifier.accept(request);
         }
         EPayHttpResponse response = httpClient.execute(request);
         String jsonStr = response.getDataAsString();

@@ -1,20 +1,24 @@
 package org.example.request;
 
-import org.example.util.UrlBuilder;
+import com.google.gson.Gson;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * 易支付Http客户端
+ */
 public class EPayHttpClient {
+    // 基础路径
     private String baseUrl;
+    // 拦截器集合
     private List<EPayHttpInterceptor> interceptors;
+    // 拦截器链
     private EPayHttpInterceptor.Chain chain;
 
     public EPayHttpClient(String baseUrl) {
@@ -78,22 +82,27 @@ public class EPayHttpClient {
                 URL url = new URL(baseUrl + path);
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 conn.setRequestMethod(request.getMethod().getValue());
-                conn.setDoOutput(true);
 
                 // 请求头处理
                 for (Map.Entry<String, String> entry : request.getHeaders().entrySet()) {
                     conn.setRequestProperty(entry.getKey(), entry.getValue());
                 }
 
+                Map<String, Object> logMap = new HashMap<>();
+                logMap.put("requestUrl", url.toString());
+                logMap.put("headers", request.getHeaders());
+                logMap.put("params", request.getParams());
+                System.out.println("Request detail: " + new Gson().toJson(logMap));
+
                 // 请求体处理
-                String contentType = conn.getRequestProperty("Content-Type");
-                String requestBody = "";
-                if (contentType != null && contentType.contains("x-www-form-urlencode")) {
-                    requestBody = UrlBuilder.concatParamMap(request.getParams(), true);
+                EPayHttpRequest.ContentType contentType = request.getContentType();
+                if (contentType != null) {
+                    conn.setDoOutput(true);
+                    RequestDataWriter writer = RequestDataWriterFactory.getWriter(contentType);
+                    if (writer != null) {
+                        writer.write(request.getParams(), conn.getOutputStream());
+                    }
                 }
-                OutputStream os = conn.getOutputStream();
-                byte[] input = requestBody.getBytes("UTF-8");
-                os.write(input, 0, input.length);
 
                 // 响应内容处理
                 int status = conn.getResponseCode();

@@ -8,7 +8,7 @@ public class EPayRequestHeaderInterceptor implements EPayHttpInterceptor {
 
   @Override
   public EPayHttpResponse intercept(EPayHttpRequest request, Chain chain) throws Exception {
-    request.addRequestHeader("Content-Type", "x-www-form-urlencode");
+    request.addRequestHeader("Content-Type", "multipart/form-data");
     return chain.proceed(request);
   }
 }

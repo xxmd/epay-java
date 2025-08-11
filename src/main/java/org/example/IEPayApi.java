@@ -3,9 +3,11 @@ package org.example;
 import org.example.entity.PayRequestParam;
 import org.example.entity.response.*;
 import org.example.request.EPayHttpInterceptor;
+import org.example.request.EPayHttpRequest;
 
 import java.math.BigDecimal;
 import java.util.Map;
+import java.util.function.Consumer;
 
 public interface IEPayApi {
     void addInterceptor(EPayHttpInterceptor interceptor);
@@ -39,9 +41,10 @@ public interface IEPayApi {
      * API接口支付
      *
      * @param payRequestParam 支付请求参数
+     * @param requestModifier 请求修改器
      * @return 支付地址（网站url|二维码|小程序url）
      */
-    ApiPayResponse apiInterfacePay(PayRequestParam payRequestParam, Map<String, String> extraParams) throws Exception;
+    ApiPayResponse apiInterfacePay(PayRequestParam payRequestParam, Consumer<EPayHttpRequest> requestModifier) throws Exception;
 
     /**
      * 查询商户信息
