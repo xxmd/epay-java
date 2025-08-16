@@ -41,4 +41,18 @@ public class EApiPayResponse extends PayResponse {
     public String getUrlScheme() {
         return urlScheme;
     }
+
+    public JSONObject toJsonObject() {
+        JSONObject jsonObject = super.toJsonObject();
+        jsonObject.put("tradeNo", tradeNo);
+        jsonObject.put("payUrl", payUrl);
+        jsonObject.put("qrCode", qrCode);
+        jsonObject.put("urlScheme", urlScheme);
+        return jsonObject;
+    }
+
+    @Override
+    public String toString() {
+        return toJsonObject().toString();
+    }
 }

@@ -18,33 +18,6 @@ public interface IPayApi {
      */
     String pageRedirectPay(PayRequestParam payRequestParam) throws Exception;
 
-    /**
-     * 页面跳转支付
-     *
-     * @param payRequestParam 支付请求参数
-     * @param extraParams     额外参数
-     * @return 跳转链接
-     */
-    String pageRedirectPay(PayRequestParam payRequestParam, Map<String, String> extraParams) throws Exception;
-
-
-    /**
-     * 查询商户信息
-     *
-     * @param pid 商户ID
-     * @param key 商户密钥
-     * @return 商户信息
-     */
-    QueryMerchantResponse queryMerchantInfo(String pid, String key) throws Exception;
-
-    /**
-     * 查询结算记录
-     *
-     * @param pid 商户ID
-     * @param key 商户密钥
-     * @return 结算记录
-     */
-    QuerySettleResponse querySettleRecord(String pid, String key) throws Exception;
 
     /**
      * 查询单个订单
@@ -54,7 +27,6 @@ public interface IPayApi {
      * @return 结算记录
      */
     QueryOrderResponse querySingleOrder(String outTradeNo) throws Exception;
-
 
 
     /**

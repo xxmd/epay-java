@@ -14,7 +14,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class ZPayApiTest extends TestCase {
-    // 易支付接口
+    // ZPay接口
     private ZPayApi zPayApi;
 
     @Override
@@ -39,7 +39,7 @@ public class ZPayApiTest extends TestCase {
         requestParam.setNotifyUrl("https://ftq.ink/download");
         requestParam.setReturnUrl("https://ftq.ink/download");
         requestParam.setName("测试商品");
-        requestParam.setMoney(new BigDecimal("1.23"));
+        requestParam.setMoney(new BigDecimal("1.233"));
         return requestParam;
     }
 
@@ -52,19 +52,19 @@ public class ZPayApiTest extends TestCase {
 
     public void testApiInterfacePay() throws Exception {
         PayRequestParam requestParam = getDefaultRequestParam(PayType.ALI_PAY);
-        requestParam.setClientIp("188.253.115.35");
         ZApiPayResponse apiPayResponse = zPayApi.apiInterfacePay(requestParam);
+        System.out.println("apiPayResponse: " + apiPayResponse);
         Assert.assertNotNull(apiPayResponse);
     }
 
     public void testQuerySingleOrder() throws Exception {
-        QueryOrderResponse response = zPayApi.querySingleOrder("2025081523271128");
+        QueryOrderResponse response = zPayApi.querySingleOrder("20250816133402261");
         System.out.printf("response: " + response);
         Assert.assertNotNull(response);
     }
 
     public void testRefund() throws Exception {
-        PayResponse response = zPayApi.refund(null, "20250816130231734", new BigDecimal("1.23"));
+        PayResponse response = zPayApi.refund(null, "20250816133402261", new BigDecimal("1.23"));
         System.out.printf("response: " + response);
         Assert.assertNotNull(response);
     }

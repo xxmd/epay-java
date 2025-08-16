@@ -88,6 +88,10 @@ public class HttpRequest {
         params.put(key, value);
     }
 
+    public void addRequestParam(String key, int value) {
+        params.put(key, String.valueOf(value));
+    }
+
     public void addRequestParams(Map<String, String> params) {
         this.params.putAll(params);
     }

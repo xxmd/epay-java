@@ -49,4 +49,19 @@ public class ZApiPayResponse extends PayResponse {
     public String getImg() {
         return img;
     }
+
+    public JSONObject toJsonObject() {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("tradeNo", tradeNo);
+        jsonObject.put("orderId", orderId);
+        jsonObject.put("payUrl", payUrl);
+        jsonObject.put("qrCode", qrCode);
+        jsonObject.put("img", img);
+        return jsonObject;
+    }
+
+    @Override
+    public String toString() {
+        return toJsonObject().toString();
+    }
 }

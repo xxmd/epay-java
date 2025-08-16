@@ -7,8 +7,7 @@ import org.example.request.EPayHttpClient;
 import org.example.request.EPayHttpInterceptor;
 import org.example.request.EPayHttpResponse;
 import org.example.request.HttpRequest;
-import org.example.request.impl.interceptor.EPayPidInterceptor;
-import org.example.request.impl.interceptor.EPaySignatureInterceptor;
+import org.example.request.impl.interceptor.PayPidInterceptor;
 import org.example.util.Md5Utils;
 import org.example.util.ReflectUtils;
 import org.example.util.StringUtils;
@@ -17,12 +16,13 @@ import org.json.JSONObject;
 
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class PayApi implements IPayApi {
     // 商户id
-    private String pid;
+    protected String pid;
     // 密钥
-    private String key;
+    protected String key;
     // 基础链接
     private String baseUrl;
     // http请求客户端
@@ -40,8 +40,19 @@ public class PayApi implements IPayApi {
     private void initHttpClient() {
         httpClient = new EPayHttpClient(this.baseUrl);
         List<EPayHttpInterceptor> interceptorList = new ArrayList<>();
-        interceptorList.add(new EPayPidInterceptor(pid));
-//        interceptorList.add(new EPaySignatureInterceptor(key, EPaySignType.MD5));
+        interceptorList.add(new EPayHttpInterceptor() {
+            @Override
+            public EPayHttpResponse intercept(HttpRequest request, Chain chain) throws Exception {
+                request.addRequestParam("pid", pid);
+                if (request.getMethod().equals(HttpRequest.Method.GET)) {
+                    request.addRequestParam("key", key);
+                }
+                if (request.getMethod().equals(HttpRequest.Method.POST)) {
+                    request.setContentType(HttpRequest.ContentType.X_WWW_FORM_URLENCODED);
+                }
+                return chain.proceed(request);
+            }
+        });
         fixedInterceptorSize = interceptorList.size();
         for (EPayHttpInterceptor interceptor : interceptorList) {
             httpClient.addInterceptor(interceptor);
@@ -56,33 +67,37 @@ public class PayApi implements IPayApi {
 
     @Override
     public String pageRedirectPay(PayRequestParam payRequestParam) throws Exception {
-        return pageRedirectPay(payRequestParam, null);
-    }
-
-    @Override
-    public String pageRedirectPay(PayRequestParam payRequestParam, Map<String, String> extraParams) throws Exception {
+//        if (payRequestParam.getType() == null) {
+//            throw new IllegalArgumentException("type[支付类型]不能为空");
+//        }
+//        if (StringUtils.isEmpty(payRequestParam.getOutTradeNo())) {
+//            throw new IllegalArgumentException("outTradeNo[商户订单号]不能为空");
+//        }
+//        if (payRequestParam.getType() == null) {
+//            throw new IllegalArgumentException("type[支付类型]不能为空");
+//        }
+//        if (StringUtils.isEmpty(payRequestParam.getNotifyUrl())) {
+//            throw new IllegalArgumentException("notifyUrl[异步通知地址]不能为空");
+//        }
+//        BigDecimal money = payRequestParam.getMoney();
+//        if (money == null) {
+//            throw new IllegalArgumentException("money[商品金额]不能为空");
+//        }
+//        if (money.compareTo(BigDecimal.ZERO) < 0) {
+//            throw new IllegalArgumentException("money[商品金额]不能小于0");
+//        }
+//        if (money.scale() > 2) {
+//            throw new IllegalArgumentException("money[商品金额]最多支持两位小数");
+//        }
         Map<String, String> fieldMap = ReflectUtils.getObjFields(payRequestParam);
         fieldMap.put("pid", pid);
         TreeMap<String, String> sortedParamMap = new TreeMap<>(fieldMap);
-        if (extraParams != null) {
-            sortedParamMap.putAll(extraParams);
-        }
         String concatParamStr = UrlBuilder.concatParamMap(sortedParamMap, false);
         String signature = Md5Utils.md5(concatParamStr + key);
         sortedParamMap.put("sign", signature);
         sortedParamMap.put("sign_type", EPaySignType.MD5.getValue());
         String queryStr = UrlBuilder.concatParamMap(sortedParamMap, true);
         return String.format(Locale.US, "%s/%s?%s", baseUrl, "submit.php", queryStr);
-    }
-
-    @Override
-    public QueryMerchantResponse queryMerchantInfo(String pid, String key) {
-        return null;
-    }
-
-    @Override
-    public QuerySettleResponse querySettleRecord(String tradeNo, String outTradeNo) {
-        return null;
     }
 
     @Override
@@ -115,5 +130,13 @@ public class PayApi implements IPayApi {
         EPayHttpResponse response = httpClient.execute(httpRequest);
         PayResponse payResponse = new PayResponse(response.getDataAsJsonObject());
         return payResponse;
+    }
+
+    protected void signRequest(HttpRequest request) {
+        TreeMap<String, String> treeMap = new TreeMap<>(request.getParams());
+        String concatParamStr = UrlBuilder.concatParamMap(treeMap, false);
+        String signature = Md5Utils.md5(concatParamStr + key);
+        request.addRequestParam("sign", signature);
+        request.addRequestParam("sign_type", "MD5");
     }
 }

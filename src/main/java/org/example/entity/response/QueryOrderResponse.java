@@ -78,6 +78,7 @@ public class QueryOrderResponse extends PayResponse {
         jsonObject.put("status", status);
         jsonObject.put("param", param);
         jsonObject.put("buyer", buyer);
+        jsonObject.put("isPaySuccess", isPaySuccess());
         return jsonObject;
     }
 }

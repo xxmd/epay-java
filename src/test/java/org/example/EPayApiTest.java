@@ -2,42 +2,26 @@ package org.example;
 
 import junit.framework.Assert;
 import junit.framework.TestCase;
+import org.example.config.HeimaPayConfig;
 import org.example.config.PayPlatformConfig;
-import org.example.config.ZPayConfig;
 import org.example.entity.PayRequestParam;
 import org.example.entity.enums.PayType;
-import org.example.entity.response.EApiPayResponse;
-import org.example.request.EPayHttpInterceptor;
-import org.example.request.HttpRequest;
-import org.example.request.EPayHttpResponse;
+import org.example.entity.response.*;
 
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 public class EPayApiTest extends TestCase {
     // 易支付接口
     private EPayApi ePayApi;
     // 商户配置信息
-    private PayPlatformConfig platformConfig = new ZPayConfig();
+    private PayPlatformConfig platformConfig = new HeimaPayConfig();
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        ePayApi = new EPayApi(platformConfig.gePid(), platformConfig.getKey(), platformConfig.getHostname());
-        if (platformConfig instanceof ZPayConfig) {
-            ePayApi.addInterceptor(new ZPayInterceptor());
-        }
-    }
-
-    class ZPayInterceptor implements EPayHttpInterceptor {
-        @Override
-        public EPayHttpResponse intercept(HttpRequest request, Chain chain) throws Exception {
-            request.addRequestParam("cid", ZPayConfig.ZPayChannel.ALI_PAY.getChannelId());
-            return chain.proceed(request);
-        }
+        this.ePayApi = new EPayApi(platformConfig.gePid(), platformConfig.getKey(), platformConfig.getHostname());
     }
 
     /**
@@ -60,57 +44,47 @@ public class EPayApiTest extends TestCase {
         return requestParam;
     }
 
-    /**
-     * 获取默认支付请求参数
-     *
-     * @return
-     */
-    private PayRequestParam getDefaultRequestParam() {
-        return getDefaultRequestParam(PayType.WX_PAY);
-    }
-
-    public void testPageRedirectPayNoExtraParams() throws Exception {
-        PayRequestParam requestParam = getDefaultRequestParam(PayType.WX_PAY);
+    public void testPageRedirectPay() throws Exception {
+        PayRequestParam requestParam = getDefaultRequestParam(PayType.ALI_PAY);
         String redirectPayLink = ePayApi.pageRedirectPay(requestParam);
         System.out.println("redirectPayLink: " + redirectPayLink);
         Assert.assertNotNull(redirectPayLink);
     }
 
-    public void testPageRedirectPayWithExtraParams() throws Exception {
-        PayRequestParam requestParam = getDefaultRequestParam(PayType.WX_PAY);
-        Map<String, String> extraParams = new HashMap<>();
-        extraParams.put("cid", ZPayConfig.ZPayChannel.ALI_PAY.getChannelId());
-        String redirectPayLink = ePayApi.pageRedirectPay(requestParam, extraParams);
-        System.out.println("redirectPayLink: " + redirectPayLink);
-        Assert.assertNotNull(redirectPayLink);
-    }
-
-    public void testApiInterfacePayNoModifier() throws Exception {
+    public void testApiInterfacePay() throws Exception {
         PayRequestParam requestParam = getDefaultRequestParam(PayType.ALI_PAY);
         EApiPayResponse apiPayResponse = ePayApi.apiInterfacePay(requestParam);
+        System.out.println("apiPayResponse: " + apiPayResponse);
         Assert.assertNotNull(apiPayResponse);
     }
 
-    public void testApiInterfacePaWithModifier() throws Exception {
-        PayRequestParam requestParam = getDefaultRequestParam(PayType.WX_PAY);
-        Map<String, String> extraParams = new HashMap<>();
-        extraParams.put("cid", ZPayConfig.ZPayChannel.ALI_PAY.getChannelId());
-        EApiPayResponse apiPayResponse = ePayApi.apiInterfacePay(requestParam);
-        Assert.assertNotNull(apiPayResponse);
+    public void testQueryMerchantInfo() throws Exception {
+        QueryMerchantResponse response = ePayApi.queryMerchantInfo();
+        System.out.println("response: " + response);
+        Assert.assertNotNull(response);
     }
 
-    public void testQueryMerchantInfo() {
+    public void testQuerySettleRecord() throws Exception {
+        QuerySettleResponse response = ePayApi.querySettleRecord();
+        System.out.println("response: " + response);
+        Assert.assertNotNull(response);
     }
 
-    public void testQuerySettleRecord() {
+    public void testQuerySingleOrder() throws Exception {
+        QueryOrderResponse response = ePayApi.querySingleOrder("20250816152139366");
+        System.out.printf("response: " + response);
+        Assert.assertNotNull(response);
     }
 
-    public void testQueryOrder() {
+    public void testQueryOrders() throws Exception {
+        QueryOrdersResponse response = ePayApi.queryMultiplyOrder(20, 1);
+        System.out.printf("response: " + response);
+        Assert.assertNotNull(response);
     }
 
-    public void testQueryOrders() {
-    }
-
-    public void testRefund() {
+    public void testRefund() throws Exception {
+        PayResponse response = ePayApi.refund(null, "20250816153119810", new BigDecimal("1.234"));
+        System.out.printf("response: " + response);
+        Assert.assertNotNull(response);
     }
 }

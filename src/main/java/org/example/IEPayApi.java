@@ -16,13 +16,18 @@ public interface IEPayApi extends IPayApi {
     EApiPayResponse apiInterfacePay(PayRequestParam payRequestParam) throws Exception;
 
     /**
-     * API接口支付
+     * 查询商户信息
      *
-     * @param payRequestParam 支付请求参数
-     * @param requestModifier 请求修改器
-     * @return 支付地址（网站url|二维码|小程序url）
+     * @return 商户信息
      */
-    EApiPayResponse apiInterfacePay(PayRequestParam payRequestParam, Consumer<HttpRequest> requestModifier) throws Exception;
+    QueryMerchantResponse queryMerchantInfo() throws Exception;
+
+    /**
+     * 查询结算记录
+     *
+     * @return 结算记录
+     */
+    QuerySettleResponse querySettleRecord() throws Exception;
 
     /**
      * 查询多个订单
