@@ -1,7 +1,7 @@
 package org.example.entity;
 
 import org.example.entity.enums.EPayDevice;
-import org.example.entity.enums.EPayType;
+import org.example.entity.enums.PayType;
 
 import java.math.BigDecimal;
 
@@ -10,7 +10,7 @@ import java.math.BigDecimal;
  */
 public class PayRequestParam {
     // 支付方式
-    private EPayType type;
+    private PayType type;
     // 商户订单号
     private String outTradeNo;
     // 异步通知地址
@@ -21,18 +21,18 @@ public class PayRequestParam {
     private String name;
     // 商品金额
     private BigDecimal money;
-    // 业务拓展参数
-    private String clientIp;
     // 用户IP地址
+    private String clientip;
+    // 设备信息
     private EPayDevice device;
-    // 设备类型
+    // 业务拓展参数
     private String param;
 
-    public EPayType getType() {
+    public PayType getType() {
         return type;
     }
 
-    public void setType(EPayType type) {
+    public void setType(PayType type) {
         this.type = type;
     }
 
@@ -77,11 +77,11 @@ public class PayRequestParam {
     }
 
     public String getClientIp() {
-        return clientIp;
+        return clientip;
     }
 
     public void setClientIp(String clientIp) {
-        this.clientIp = clientIp;
+        this.clientip = clientIp;
     }
 
     public EPayDevice getDevice() {

@@ -2,7 +2,7 @@ package org.example.request.impl.interceptor;
 
 import org.example.entity.enums.EPaySignType;
 import org.example.request.EPayHttpInterceptor;
-import org.example.request.EPayHttpRequest;
+import org.example.request.HttpRequest;
 import org.example.request.EPayHttpResponse;
 import org.example.util.Md5Utils;
 
@@ -19,7 +19,10 @@ public class EPaySignatureInterceptor implements EPayHttpInterceptor {
     }
 
     @Override
-    public EPayHttpResponse intercept(EPayHttpRequest request, Chain chain) throws Exception {
+    public EPayHttpResponse intercept(HttpRequest request, Chain chain) throws Exception {
+        if (request.getMethod().equals(HttpRequest.Method.POST)) {
+
+        }
         TreeMap<String, String> treeMap = new TreeMap<>(request.getParams());
         String concatParamStr = treeMap.entrySet().stream().map(it -> it.getKey() + "=" + it.getValue()).collect(Collectors.joining("&"));
         String signature = "";

@@ -1,10 +1,11 @@
 package org.example.entity.response;
 
-import org.example.entity.enums.EPayType;
+import org.example.entity.enums.PayType;
+import org.json.JSONObject;
 
 import java.math.BigDecimal;
 
-public class QueryMerchantResponse extends EPayResponse {
+public class QueryMerchantResponse extends PayResponse {
     // 商户ID
     private String pid;
     // 商户密钥
@@ -14,7 +15,7 @@ public class QueryMerchantResponse extends EPayResponse {
     // 商户余额
     private BigDecimal money;
     // 结算方式
-    private EPayType type;
+    private PayType type;
     // 结算账号
     private String account;
     // 订单姓名
@@ -25,4 +26,8 @@ public class QueryMerchantResponse extends EPayResponse {
     private int orderToday;
     // 昨日订单
     private int orderLastday;
+
+    public QueryMerchantResponse(JSONObject jsonObject) {
+        super(jsonObject);
+    }
 }

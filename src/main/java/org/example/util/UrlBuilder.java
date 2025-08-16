@@ -30,7 +30,7 @@ public class UrlBuilder {
         if (paramMap == null || paramMap.isEmpty()) {
             return "";
         }
-        return paramMap.entrySet().stream().map(entry -> {
+        return paramMap.entrySet().stream().filter(it -> StringUtils.isNotEmpty(it.getKey()) && StringUtils.isNotEmpty(it.getValue())).map(entry -> {
             try {
                 String key = enableUrlEncode ? URLEncoder.encode(entry.getKey(), "UTF-8") : entry.getKey();
                 String value = enableUrlEncode ? URLEncoder.encode(entry.getValue(), "UTF-8") : entry.getValue();

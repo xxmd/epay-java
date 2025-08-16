@@ -1,10 +1,12 @@
 package org.example.entity.response;
 
-import org.example.entity.enums.EPayType;
+import org.json.JSONObject;
 
-import java.math.BigDecimal;
-
-public class QueryOrdersResponse extends EPayResponse {
+public class QueryOrdersResponse extends PayResponse {
     // 易支付订单号
     private Object[] data;
+
+    public QueryOrdersResponse(JSONObject jsonObject) {
+        super(jsonObject);
+    }
 }

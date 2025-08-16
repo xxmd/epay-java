@@ -3,7 +3,7 @@ package org.example.request;
 import java.util.HashMap;
 import java.util.Map;
 
-public class EPayHttpRequest {
+public class HttpRequest {
 
     public enum Method {
         GET("GET"), POST("POST");
@@ -42,7 +42,7 @@ public class EPayHttpRequest {
     // 请求参数
     private Map<String, String> params = new HashMap<>();
 
-    public EPayHttpRequest(Method method, String path) {
+    public HttpRequest(Method method, String path) {
         this.method = method;
         this.path = path;
     }

@@ -1,8 +1,12 @@
 package org.example.request;
 
-import com.google.gson.Gson;
 
-import java.io.*;
+import org.example.util.UrlBuilder;
+import org.json.JSONObject;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
@@ -39,7 +43,7 @@ public class EPayHttpClient {
         return interceptors;
     }
 
-    public EPayHttpResponse execute(EPayHttpRequest request) throws Exception {
+    public EPayHttpResponse execute(HttpRequest request) throws Exception {
         return chain.proceed(request);
     }
 
@@ -55,7 +59,7 @@ public class EPayHttpClient {
         }
 
         @Override
-        public EPayHttpResponse proceed(EPayHttpRequest request) throws Exception {
+        public EPayHttpResponse proceed(HttpRequest request) throws Exception {
             if (index >= interceptors.size()) {
                 // 链执行结束，模拟发请求
                 return doRealRequest(request);
@@ -74,11 +78,14 @@ public class EPayHttpClient {
          * @param request 网络请求
          * @return 响应内容
          */
-        private EPayHttpResponse doRealRequest(EPayHttpRequest request) {
+        private EPayHttpResponse doRealRequest(HttpRequest request) {
             EPayHttpResponse response = new EPayHttpResponse();
             try {
+                String path = request.getPath();
                 // 请求链接和请求方式处理
-                String path = request.getPath() == null ? "/" : request.getPath();
+                if (HttpRequest.Method.GET.equals(request.getMethod()) && isNotEmptyMap(request.getParams())) {
+                    path = request.getPath() + "?" + UrlBuilder.concatParamMap(request.getParams(), true);
+                }
                 URL url = new URL(baseUrl + path);
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 conn.setRequestMethod(request.getMethod().getValue());
@@ -92,15 +99,17 @@ public class EPayHttpClient {
                 logMap.put("requestUrl", url.toString());
                 logMap.put("headers", request.getHeaders());
                 logMap.put("params", request.getParams());
-                System.out.println("Request detail: " + new Gson().toJson(logMap));
+                System.out.println("Request detail: " + new JSONObject(logMap));
 
                 // 请求体处理
-                EPayHttpRequest.ContentType contentType = request.getContentType();
-                if (contentType != null) {
-                    conn.setDoOutput(true);
-                    RequestDataWriter writer = RequestDataWriterFactory.getWriter(contentType);
-                    if (writer != null) {
-                        writer.write(request.getParams(), conn.getOutputStream());
+                if (HttpRequest.Method.POST.equals(request.getMethod()) && isNotEmptyMap(request.getParams())) {
+                    HttpRequest.ContentType contentType = request.getContentType();
+                    if (contentType != null) {
+                        conn.setDoOutput(true);
+                        RequestDataWriter writer = RequestDataWriterFactory.getWriter(contentType);
+                        if (writer != null) {
+                            writer.write(request.getParams(), conn.getOutputStream());
+                        }
                     }
                 }
 
@@ -119,6 +128,10 @@ public class EPayHttpClient {
                 e.printStackTrace();
             }
             return response;
+        }
+
+        private boolean isNotEmptyMap(Map<String, String> map) {
+            return map != null && map.size() > 0;
         }
 
         /**

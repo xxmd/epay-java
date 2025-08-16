@@ -1,16 +1,14 @@
 package org.example;
 
-import com.google.gson.Gson;
 import junit.framework.Assert;
 import junit.framework.TestCase;
-import org.example.config.HeimaPayConfig;
 import org.example.config.PayPlatformConfig;
 import org.example.config.ZPayConfig;
 import org.example.entity.PayRequestParam;
-import org.example.entity.enums.EPayType;
-import org.example.entity.response.ApiPayResponse;
+import org.example.entity.enums.PayType;
+import org.example.entity.response.EApiPayResponse;
 import org.example.request.EPayHttpInterceptor;
-import org.example.request.EPayHttpRequest;
+import org.example.request.HttpRequest;
 import org.example.request.EPayHttpResponse;
 
 import java.math.BigDecimal;
@@ -20,7 +18,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class EPayApiTest extends TestCase {
-    private Gson gson;
     // 易支付接口
     private EPayApi ePayApi;
     // 商户配置信息
@@ -29,7 +26,6 @@ public class EPayApiTest extends TestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        gson = new Gson();
         ePayApi = new EPayApi(platformConfig.gePid(), platformConfig.getKey(), platformConfig.getHostname());
         if (platformConfig instanceof ZPayConfig) {
             ePayApi.addInterceptor(new ZPayInterceptor());
@@ -38,7 +34,7 @@ public class EPayApiTest extends TestCase {
 
     class ZPayInterceptor implements EPayHttpInterceptor {
         @Override
-        public EPayHttpResponse intercept(EPayHttpRequest request, Chain chain) throws Exception {
+        public EPayHttpResponse intercept(HttpRequest request, Chain chain) throws Exception {
             request.addRequestParam("cid", ZPayConfig.ZPayChannel.ALI_PAY.getChannelId());
             return chain.proceed(request);
         }
@@ -50,7 +46,7 @@ public class EPayApiTest extends TestCase {
      * @param ePayType
      * @return
      */
-    private PayRequestParam getDefaultRequestParam(EPayType ePayType) {
+    private PayRequestParam getDefaultRequestParam(PayType ePayType) {
         PayRequestParam requestParam = new PayRequestParam();
         requestParam.setType(ePayType);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSS");
@@ -60,7 +56,7 @@ public class EPayApiTest extends TestCase {
         requestParam.setReturnUrl("https://ftq.ink/download");
         requestParam.setName("测试商品");
         requestParam.setMoney(new BigDecimal("1.23"));
-        requestParam.setClientIp("188.253.115.35");
+        requestParam.setClientIp("188.253.115.12");
         return requestParam;
     }
 
@@ -70,18 +66,18 @@ public class EPayApiTest extends TestCase {
      * @return
      */
     private PayRequestParam getDefaultRequestParam() {
-        return getDefaultRequestParam(EPayType.WX_PAY);
+        return getDefaultRequestParam(PayType.WX_PAY);
     }
 
     public void testPageRedirectPayNoExtraParams() throws Exception {
-        PayRequestParam requestParam = getDefaultRequestParam(EPayType.WX_PAY);
+        PayRequestParam requestParam = getDefaultRequestParam(PayType.WX_PAY);
         String redirectPayLink = ePayApi.pageRedirectPay(requestParam);
         System.out.println("redirectPayLink: " + redirectPayLink);
         Assert.assertNotNull(redirectPayLink);
     }
 
     public void testPageRedirectPayWithExtraParams() throws Exception {
-        PayRequestParam requestParam = getDefaultRequestParam(EPayType.WX_PAY);
+        PayRequestParam requestParam = getDefaultRequestParam(PayType.WX_PAY);
         Map<String, String> extraParams = new HashMap<>();
         extraParams.put("cid", ZPayConfig.ZPayChannel.ALI_PAY.getChannelId());
         String redirectPayLink = ePayApi.pageRedirectPay(requestParam, extraParams);
@@ -90,18 +86,16 @@ public class EPayApiTest extends TestCase {
     }
 
     public void testApiInterfacePayNoModifier() throws Exception {
-        PayRequestParam requestParam = getDefaultRequestParam(EPayType.ALI_PAY);
-        ApiPayResponse apiPayResponse = ePayApi.apiInterfacePay(requestParam);
-        System.out.println("apiPayResponse: " + gson.toJson(apiPayResponse));
+        PayRequestParam requestParam = getDefaultRequestParam(PayType.ALI_PAY);
+        EApiPayResponse apiPayResponse = ePayApi.apiInterfacePay(requestParam);
         Assert.assertNotNull(apiPayResponse);
     }
 
     public void testApiInterfacePaWithModifier() throws Exception {
-        PayRequestParam requestParam = getDefaultRequestParam(EPayType.WX_PAY);
+        PayRequestParam requestParam = getDefaultRequestParam(PayType.WX_PAY);
         Map<String, String> extraParams = new HashMap<>();
         extraParams.put("cid", ZPayConfig.ZPayChannel.ALI_PAY.getChannelId());
-        ApiPayResponse apiPayResponse = ePayApi.apiInterfacePay(requestParam);
-        System.out.println("apiPayResponse: " + gson.toJson(apiPayResponse));
+        EApiPayResponse apiPayResponse = ePayApi.apiInterfacePay(requestParam);
         Assert.assertNotNull(apiPayResponse);
     }
 

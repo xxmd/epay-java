@@ -1,39 +1,27 @@
 package org.example;
 
-import com.google.gson.Gson;
 import junit.framework.Assert;
 import junit.framework.TestCase;
-import org.example.config.PayPlatformConfig;
 import org.example.config.ZPayConfig;
 import org.example.entity.PayRequestParam;
-import org.example.entity.enums.EPayType;
-import org.example.entity.response.ApiPayResponse;
-import org.example.request.EPayHttpInterceptor;
-import org.example.request.EPayHttpRequest;
-import org.example.request.EPayHttpResponse;
+import org.example.entity.enums.PayType;
+import org.example.entity.response.PayResponse;
+import org.example.entity.response.QueryOrderResponse;
+import org.example.entity.response.ZApiPayResponse;
 
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 public class ZPayApiTest extends TestCase {
-    private Gson gson;
     // 易支付接口
-    private EPayApi ePayApi;
-
-    public static final String pid = "2025071018032699";
-    public static final String key = "2025071018032699";
-    public static final String hostname = "2025071018032699";
-    public static final String cid = "2025071018032699";
+    private ZPayApi zPayApi;
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        this.gson = new Gson();
         ZPayConfig zPayConfig = new ZPayConfig();
-        this.ePayApi = new ZPayApi(zPayConfig.gePid(), zPayConfig.getKey(), zPayConfig.getHostname(), ZPayConfig.ZPayChannel.ALI_PAY.getChannelId());
+        this.zPayApi = new ZPayApi(zPayConfig.gePid(), zPayConfig.getKey(), zPayConfig.getHostname(), ZPayConfig.ZPayChannel.ALI_PAY.getChannelId());
     }
 
     /**
@@ -42,7 +30,7 @@ public class ZPayApiTest extends TestCase {
      * @param ePayType
      * @return
      */
-    private PayRequestParam getDefaultRequestParam(EPayType ePayType) {
+    private PayRequestParam getDefaultRequestParam(PayType ePayType) {
         PayRequestParam requestParam = new PayRequestParam();
         requestParam.setType(ePayType);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSS");
@@ -56,17 +44,28 @@ public class ZPayApiTest extends TestCase {
     }
 
     public void testPageRedirectPay() throws Exception {
-        PayRequestParam requestParam = getDefaultRequestParam(EPayType.ALI_PAY);
-        String redirectPayLink = ePayApi.pageRedirectPay(requestParam);
+        PayRequestParam requestParam = getDefaultRequestParam(PayType.ALI_PAY);
+        String redirectPayLink = zPayApi.pageRedirectPay(requestParam);
         System.out.println("redirectPayLink: " + redirectPayLink);
         Assert.assertNotNull(redirectPayLink);
     }
 
     public void testApiInterfacePay() throws Exception {
-        PayRequestParam requestParam = getDefaultRequestParam(EPayType.ALI_PAY);
+        PayRequestParam requestParam = getDefaultRequestParam(PayType.ALI_PAY);
         requestParam.setClientIp("188.253.115.35");
-        ApiPayResponse apiPayResponse = ePayApi.apiInterfacePay(requestParam);
-        System.out.println("apiPayResponse: " + gson.toJson(apiPayResponse));
+        ZApiPayResponse apiPayResponse = zPayApi.apiInterfacePay(requestParam);
         Assert.assertNotNull(apiPayResponse);
+    }
+
+    public void testQuerySingleOrder() throws Exception {
+        QueryOrderResponse response = zPayApi.querySingleOrder("2025081523271128");
+        System.out.printf("response: " + response);
+        Assert.assertNotNull(response);
+    }
+
+    public void testRefund() throws Exception {
+        PayResponse response = zPayApi.refund(null, "20250816130231734", new BigDecimal("1.23"));
+        System.out.printf("response: " + response);
+        Assert.assertNotNull(response);
     }
 }

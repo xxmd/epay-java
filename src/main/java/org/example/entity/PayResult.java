@@ -2,7 +2,7 @@ package org.example.entity;
 
 import org.example.entity.enums.EPayDevice;
 import org.example.entity.enums.EPaySignType;
-import org.example.entity.enums.EPayType;
+import org.example.entity.enums.PayType;
 
 import java.math.BigDecimal;
 
@@ -14,7 +14,7 @@ public class PayResult {
     // 商户订单号
     private String outTradeNo;
     // 支付方式
-    private EPayType type;
+    private PayType type;
     // 商品名称
     private String name;
     // 商品金额

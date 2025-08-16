@@ -1,9 +1,11 @@
 package org.example.entity.response;
 
+import org.json.JSONObject;
+
 /**
  * API接口支付响应结果
  */
-public class ApiPayResponse extends EPayResponse {
+public class EApiPayResponse extends PayResponse {
     // 订单号
     private String tradeNo;
     // 支付跳转url
@@ -12,6 +14,17 @@ public class ApiPayResponse extends EPayResponse {
     private String qrCode;
     // 小程序跳转url
     private String urlScheme;
+
+    public EApiPayResponse(JSONObject jsonObject) {
+        super(jsonObject);
+        if (jsonObject == null) {
+            return;
+        }
+        this.tradeNo = jsonObject.optString("trade_no");
+        this.payUrl = jsonObject.optString("payurl");
+        this.qrCode = jsonObject.optString("qrcode");
+        this.urlScheme = jsonObject.optString("urlscheme");
+    }
 
     public String getTradeNo() {
         return tradeNo;

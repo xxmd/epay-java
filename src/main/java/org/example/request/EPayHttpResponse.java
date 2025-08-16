@@ -1,5 +1,8 @@
 package org.example.request;
 
+import org.example.util.StringUtils;
+import org.json.JSONObject;
+
 import java.net.HttpURLConnection;
 
 public class EPayHttpResponse {
@@ -29,6 +32,14 @@ public class EPayHttpResponse {
 
     public String getDataAsString() {
         return new String(data);
+    }
+
+    public JSONObject getDataAsJsonObject() {
+        String dataAsString = getDataAsString();
+        if (StringUtils.isEmpty(dataAsString)) {
+            return new JSONObject();
+        }
+        return new JSONObject(dataAsString);
     }
 
     public void setData(byte[] data) {

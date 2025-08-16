@@ -1,7 +1,7 @@
 package org.example.request;
 
 public class RequestDataWriterFactory {
-    public static RequestDataWriter getWriter(EPayHttpRequest.ContentType contentType) {
+    public static RequestDataWriter getWriter(HttpRequest.ContentType contentType) {
         switch (contentType) {
             case FORM_DATA:
                 return new FormDataWriter();
