@@ -115,7 +115,7 @@ public class BasePayApi implements IBasePayApi {
     /**
      * 请求参数签名
      *
-     * @param request
+     * @param request 请求实例
      */
     protected void signRequest(HttpRequest request) {
         TreeMap<String, String> treeMap = new TreeMap<>(request.getParams());

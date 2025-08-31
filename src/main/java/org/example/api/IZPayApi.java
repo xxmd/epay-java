@@ -9,15 +9,7 @@ public interface IZPayApi extends IBasePayApi {
      *
      * @param payRequestParam 支付请求参数
      * @return 支付地址（网站url|二维码|小程序url）
+     * @throws Exception API接口支付异常
      */
     ZApiPayResponse apiInterfacePay(PayRequestParam payRequestParam) throws Exception;
-
-//    /**
-//     * API接口支付
-//     *
-//     * @param payRequestParam 支付请求参数
-//     * @param requestModifier 请求修改器
-//     * @return 支付地址（网站url|二维码|小程序url）
-//     */
-//    ZApiPayResponse apiInterfacePay(PayRequestParam payRequestParam, Consumer<HttpRequest> requestModifier) throws Exception;
 }

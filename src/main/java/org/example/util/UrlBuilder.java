@@ -11,7 +11,7 @@ public class UrlBuilder {
      *
      * @param paramMap        map集合
      * @param enableUrlEncode 开启url编码
-     * @return
+     * @return 参数拼接结果
      */
     public static String concatParamMap(Map<String, String> paramMap, boolean enableUrlEncode) {
         return concatParamMap(paramMap, "=", "&", enableUrlEncode);
