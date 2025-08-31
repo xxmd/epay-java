@@ -1,13 +1,12 @@
-package org.example;
+package org.example.api;
 
 import org.example.entity.PayRequestParam;
 import org.example.entity.response.*;
 import org.example.request.EPayHttpInterceptor;
 
 import java.math.BigDecimal;
-import java.util.Map;
 
-public interface IPayApi {
+public interface IBasePayApi {
     void addInterceptor(EPayHttpInterceptor interceptor);
 
     /**

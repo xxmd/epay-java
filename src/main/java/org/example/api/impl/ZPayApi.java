@@ -1,23 +1,18 @@
-package org.example;
+package org.example.api.impl;
 
+import org.example.api.IZPayApi;
 import org.example.entity.PayRequestParam;
 import org.example.entity.response.*;
-import org.example.request.EPayHttpInterceptor;
 import org.example.request.HttpRequest;
 import org.example.request.EPayHttpResponse;
-import org.example.util.Md5Utils;
 import org.example.util.ReflectUtils;
-import org.json.JSONObject;
 
 import java.util.Map;
-import java.util.TreeMap;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 /**
  * ZPay支付接口
  */
-public class ZPayApi extends PayApi implements IZPayApi {
+public class ZPayApi extends BasePayApi implements IZPayApi {
     // 支付渠道id
     private String channelId;
 

@@ -1,7 +1,7 @@
 package org.example.entity.enums;
 
 public enum EPaySignType implements ReadableEnum {
-    MD5("MD5", "电脑浏览器");
+    MD5("MD5", "MD5签名");
 
     private final String value;
     private final String description;

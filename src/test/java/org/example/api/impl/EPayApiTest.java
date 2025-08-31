@@ -1,9 +1,9 @@
-package org.example;
+package org.example.api.impl;
 
 import junit.framework.Assert;
 import junit.framework.TestCase;
-import org.example.config.HeimaPayConfig;
-import org.example.config.PayPlatformConfig;
+import org.example.api.impl.config.HeimaPayConfig;
+import org.example.api.impl.config.PayPlatformConfig;
 import org.example.entity.PayRequestParam;
 import org.example.entity.enums.PayType;
 import org.example.entity.response.*;
@@ -71,20 +71,20 @@ public class EPayApiTest extends TestCase {
     }
 
     public void testQuerySingleOrder() throws Exception {
-        QueryOrderResponse response = ePayApi.querySingleOrder("20250816152139366");
-        System.out.printf("response: " + response);
+        QueryOrderResponse response = ePayApi.querySingleOrder("20250831134255843");
+        System.out.println("response: " + response);
         Assert.assertNotNull(response);
     }
 
     public void testQueryOrders() throws Exception {
         QueryOrdersResponse response = ePayApi.queryMultiplyOrder(20, 1);
-        System.out.printf("response: " + response);
+        System.out.println("response: " + response);
         Assert.assertNotNull(response);
     }
 
     public void testRefund() throws Exception {
         PayResponse response = ePayApi.refund(null, "20250816153119810", new BigDecimal("1.234"));
-        System.out.printf("response: " + response);
+        System.out.println("response: " + response);
         Assert.assertNotNull(response);
     }
 }

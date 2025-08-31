@@ -1,5 +1,8 @@
 package org.example.entity.enums;
 
+/**
+ * 易支付
+ */
 public enum EPayAction implements ReadableEnum {
     QUERY("query", "查询"),
     SETTLE("settle", "结算"),

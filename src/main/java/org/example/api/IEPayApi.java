@@ -1,12 +1,9 @@
-package org.example;
+package org.example.api;
 
 import org.example.entity.PayRequestParam;
 import org.example.entity.response.*;
-import org.example.request.HttpRequest;
 
-import java.util.function.Consumer;
-
-public interface IEPayApi extends IPayApi {
+public interface IEPayApi extends IBasePayApi {
     /**
      * API接口支付
      *

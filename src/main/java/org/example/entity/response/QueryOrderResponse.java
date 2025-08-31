@@ -36,6 +36,7 @@ public class QueryOrderResponse extends PayResponse {
         super(jsonObject);
         tradeNo = jsonObject.optString("trade_no");
         outTradeNo = jsonObject.optString("out_trade_no");
+        apiTradeNo = jsonObject.optString("api_trade_no");
         String typeStr = jsonObject.optString("type");
         if (StringUtils.isNotEmpty(typeStr)) {
             type = PayType.valueOfIgnoreCase(typeStr);

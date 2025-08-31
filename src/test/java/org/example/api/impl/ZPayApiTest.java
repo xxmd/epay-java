@@ -1,8 +1,8 @@
-package org.example;
+package org.example.api.impl;
 
 import junit.framework.Assert;
 import junit.framework.TestCase;
-import org.example.config.ZPayConfig;
+import org.example.api.impl.config.ZPayConfig;
 import org.example.entity.PayRequestParam;
 import org.example.entity.enums.PayType;
 import org.example.entity.response.PayResponse;
@@ -17,6 +17,10 @@ public class ZPayApiTest extends TestCase {
     // ZPay接口
     private ZPayApi zPayApi;
 
+    /**
+     * 测试前初始化工作
+     * @throws Exception
+     */
     @Override
     protected void setUp() throws Exception {
         super.setUp();
@@ -43,6 +47,10 @@ public class ZPayApiTest extends TestCase {
         return requestParam;
     }
 
+    /**
+     * 测试页面跳转支付
+     * @throws Exception
+     */
     public void testPageRedirectPay() throws Exception {
         PayRequestParam requestParam = getDefaultRequestParam(PayType.ALI_PAY);
         String redirectPayLink = zPayApi.pageRedirectPay(requestParam);
@@ -58,13 +66,13 @@ public class ZPayApiTest extends TestCase {
     }
 
     public void testQuerySingleOrder() throws Exception {
-        QueryOrderResponse response = zPayApi.querySingleOrder("20250816133402261");
+        QueryOrderResponse response = zPayApi.querySingleOrder("20250831133758463");
         System.out.printf("response: " + response);
         Assert.assertNotNull(response);
     }
 
     public void testRefund() throws Exception {
-        PayResponse response = zPayApi.refund(null, "20250816133402261", new BigDecimal("1.23"));
+        PayResponse response = zPayApi.refund(null, "20250831133758463", new BigDecimal("1.23"));
         System.out.printf("response: " + response);
         Assert.assertNotNull(response);
     }

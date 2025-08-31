@@ -1,4 +1,4 @@
-package org.example.config;
+package org.example.api.impl.config;
 
 public class ZPayConfig implements PayPlatformConfig {
     @Override

@@ -1,5 +1,8 @@
 package org.example.entity.enums;
 
+/**
+ * 易支付设备类型
+ */
 public enum EPayDevice implements ReadableEnum {
     PC("pc", "电脑浏览器"),
     MOBILE("mobile", "手机浏览器"),
